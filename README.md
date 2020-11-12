@@ -1,0 +1,1 @@
+# AWS templates made by hesingborg stad.

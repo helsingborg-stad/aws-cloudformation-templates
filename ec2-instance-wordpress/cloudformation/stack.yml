@@ -23,8 +23,9 @@ Parameters:
   GithubRepo:
     Type: String
     Description: Github repo containing config files.
-
-
+  VPCID:
+    Type: String
+    Description: VPC Id for the instance network.
 Resources:
   EC2Instance:
       Type: AWS::EC2::Instance
@@ -115,7 +116,7 @@ Resources:
           config_apache:
             files:
               /etc/apache2/ports.conf:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/main/config/apache/ports.conf
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/apache/ports.conf
             commands:
               01enable_modules:
                 command: |
@@ -179,7 +180,7 @@ Resources:
           config_varnish:
             files:
               /etc/varnish/default.vcl:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/main/config/varnish/default.vcl
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/varnish/default.vcl
 
             commands:
               01install_varnish:
@@ -199,7 +200,7 @@ Resources:
           config_nginx:
             files:
               /etc/nginx/sites-available/default:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/main/config/nginx/default
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/nginx/default
 
             commands:
               01restart_nginx:
@@ -238,7 +239,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
         GroupDescription: Allow http to client host
-        VpcId: vpc-21399048
+        VpcId: !Ref VPCID
         SecurityGroupIngress:
           - IpProtocol: tcp
             FromPort: 22

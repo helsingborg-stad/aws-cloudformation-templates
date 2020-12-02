@@ -116,7 +116,7 @@ Resources:
           config_apache:
             files:
               /etc/apache2/ports.conf:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/apache/ports.conf
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/apache/ports.conf
             commands:
               01enable_modules:
                 command: |
@@ -180,7 +180,7 @@ Resources:
           config_varnish:
             files:
               /etc/varnish/default.vcl:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/varnish/default.vcl
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/ec2-instance-wordpress/varnish/default.vcl
 
             commands:
               01install_varnish:
@@ -200,8 +200,7 @@ Resources:
           config_nginx:
             files:
               /etc/nginx/sites-available/default:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/nginx/default
-
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/nginx/default
             commands:
               01restart_nginx:
                 command: |

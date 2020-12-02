@@ -180,7 +180,7 @@ Resources:
           config_varnish:
             files:
               /etc/varnish/default.vcl:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/config/ec2-instance-wordpress/varnish/default.vcl
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/varnish/default.vcl
 
             commands:
               01install_varnish:

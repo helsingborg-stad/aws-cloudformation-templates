@@ -118,6 +118,8 @@ Resources:
             files:
               /etc/apache2/ports.conf:
                 source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/apache/ports.conf
+              /etc/apache2/sites-available/000-default.conf:
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/apache/000-default.conf
             commands:
               01enable_modules:
                 command: |

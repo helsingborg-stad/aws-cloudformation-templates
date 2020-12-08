@@ -6,6 +6,9 @@ Parameters:
     Type: String
     Default: t3.micro
     Description: Instance type to use.
+  InstanceName:
+    Type: String
+    Description: Instance Name
   VolumeSize:
     Type: String
     Default: 50

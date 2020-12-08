@@ -1,0 +1,78 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Helsingborg stad ToMoveIt Dynamodb stack.
+
+Resources:
+  DynamoDBTableToMoveIt:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: bandId
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: bandId
+          KeyType: HASH
+        - AttributeName: date
+          KeyType: RANGE
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      TableName: ToMoveItBandData
+
+  IAMUserDynamoDBToMoveItReadOnly:
+    Type: AWS::IAM::User
+    Properties: 
+      Policies:
+        - PolicyName: ReadOnlyDynamoDBToMoveIt
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:BatchGetItem
+                  - dynamodb:Describe*
+                  - dynamodb:List*
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt DynamoDBTableToMoveIt.Arn
+
+  IAMUserDynamoDBToMoveItFullAccess:
+    Type: AWS::IAM::User
+    Properties: 
+      Policies:
+        - PolicyName: ReadOnlyDynamoDBToMoveIt
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                Resource:
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+
+  IAMAccessKeyDynamoDBToMoveItReadOnly:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref IAMUserDynamoDBToMoveItReadOnly
+
+  IAMAccessKeyDynamoDBToMoveItFullAccess:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref IAMUserDynamoDBToMoveItFullAccess
+
+Outputs:
+  ReadOnlyAccessKeyId:
+    Value: !Ref IAMAccessKeyDynamoDBToMoveItReadOnly
+
+  ReadOnlySecretAccessKey:
+    Value: !GetAtt IAMAccessKeyDynamoDBToMoveItReadOnly.SecretAccessKey
+
+  FullAccessAccessKeyId:
+    Value: !Ref IAMAccessKeyDynamoDBToMoveItFullAccess
+
+  FullAccessSecretAccessKey:
+    Value: !GetAtt IAMAccessKeyDynamoDBToMoveItFullAccess.SecretAccessKey

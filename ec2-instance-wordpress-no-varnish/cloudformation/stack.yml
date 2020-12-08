@@ -6,6 +6,9 @@ Parameters:
     Type: String
     Default: t3.micro
     Description: Instance type to use.
+  InstanceName:
+    Type: String
+    Description: Instance Name
   VolumeSize:
     Type: String
     Default: 50
@@ -71,8 +74,6 @@ Resources:
               - install_wp_cli
               - install_composer
               - install_redis
-              - install_varnish
-              - config_varnish
               - install_nginx
               - config_nginx
               - install_certbot
@@ -122,9 +123,9 @@ Resources:
           config_apache:
             files:
               /etc/apache2/ports.conf:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/apache/ports.conf
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress-no-varnish/config/apache/ports.conf
               /etc/apache2/sites-available/000-default.conf:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/apache/000-default.conf
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress-no-varnish/config/apache/000-default.conf
             commands:
               01enable_modules:
                 command: |
@@ -178,22 +179,6 @@ Resources:
                 command: |
                   apt-get install -y redis-server
  
-          install_varnish:
-            commands:
-              01install_varnish:
-                test: test ! -e /etc/varnish/
-                command: |
-                  apt-get install -y varnish
-
-          config_varnish:
-            files:
-              /etc/varnish/default.vcl:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/varnish/default.vcl
-
-            commands:
-              01install_varnish:
-                command: |
-                  service varnish restart
           install_nginx:
             commands:
               01generate_certificate:
@@ -208,7 +193,7 @@ Resources:
           config_nginx:
             files:
               /etc/nginx/sites-available/default:
-                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress/config/nginx/default
+                source: !Sub https://raw.githubusercontent.com/${GithubAccount}/${GithubRepo}/master/ec2-instance-wordpress-no-varnish/config/nginx/default
             commands:
               01restart_nginx:
                 command: |

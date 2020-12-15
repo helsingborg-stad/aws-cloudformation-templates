@@ -302,11 +302,11 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Sub ${AWS::StackName}-CodeBuildProject
-                EnvironmentVariables: |
+                EnvironmentVariables: !Sub |
                   [
                     {
-                      "name": "SERVICE_PATHES",
-                      "value": "hejsan"
+                      "name": "ACCOUNT",
+                      "value": "${ProductionAccount}"
                     }
                   ]
               InputArtifacts: 

@@ -261,6 +261,12 @@ Resources:
         BuildSpec: aws-pipeline-resources/cloudformation/buildspec.yml
 
 
+  CodeStarConnectionsConnection:
+    Type: 'AWS::CodeStarConnections::Connection'
+    Properties:
+      ConnectionName: !Sub "${AWS::StackName}-connection"
+      ProviderType: GitHub
+
 
   CodePipelinePipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -279,15 +285,13 @@ Resources:
             - Name: SourceAction
               ActionTypeId:
                 Category: Source
-                Owner: ThirdParty
+                Owner: AWS
                 Version: "1"
-                Provider: GitHub
+                Provider: CodeStarSourceConnection
               Configuration:
-                Owner: !Ref GitHubOwner
-                Repo: !Ref GitHubRepo
-                Branch: !Ref GitHubBranch
-                OAuthToken: "{{resolve:secretsmanager:CodepipelineGithubAccessToken:SecretString:token}}"
-                PollForSourceChanges: false
+                ConnectionArn: !Ref CodeStarConnectionsConnection
+                FullRepositoryId: !Sub "${GitHubOwner}/${GitHubRepo}"
+                BranchName: !Ref GitHubBranch
               OutputArtifacts:
                 - Name: SourceOutput
               RunOrder: 1

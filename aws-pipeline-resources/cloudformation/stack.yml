@@ -239,7 +239,7 @@ Resources:
           - Sid: codestarconnection
             Effect: Allow
             Action:
-              - codestar-connection:*
+              - codestar-connections:*
             Resource:
               - !Ref CodeStarConnectionsConnection
       Roles:

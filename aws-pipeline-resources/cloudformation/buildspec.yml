@@ -6,6 +6,7 @@ phases:
     runtime-versions:
       nodejs: 10
     commands:
+      - echo "unsafe-perm=true" > .npmrc
       - npm install -g serverless
       - npm install
   build:

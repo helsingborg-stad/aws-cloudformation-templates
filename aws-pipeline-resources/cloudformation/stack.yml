@@ -175,6 +175,14 @@ Resources:
             Action:
               - cloudformation:ValidateTemplate
             Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:*'
+          - Sid: iam
+            Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource:
+              - !Sub arn:aws:iam::${ProductionAccount}:role/CloudformationDeployRole
+              # - !Sub arn:aws:iam::${StageAccount}:role/CodepipelineRole
+              # - !Sub arn:aws:iam::${DevAccount}:role/CodepipelineRole
       Roles:
         - !Ref IAMRoleBuildProject
 

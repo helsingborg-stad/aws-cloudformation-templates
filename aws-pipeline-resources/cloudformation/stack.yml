@@ -239,7 +239,7 @@ Resources:
           - Sid: codestarconnection
             Effect: Allow
             Action:
-              - codestar-connections:*
+              - codestar-connections:UseConnection
             Resource:
               - !Ref CodeStarConnectionsConnection
       Roles:
@@ -271,7 +271,6 @@ Resources:
     Properties:
       ConnectionName: !Sub "${AWS::StackName}-connection"
       ProviderType: GitHub
-
 
   CodePipelinePipeline:
     Type: AWS::CodePipeline::Pipeline

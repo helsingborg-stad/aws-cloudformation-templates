@@ -29,15 +29,6 @@ Parameters:
     Default: pipeline-test
   # ServicePathes:
   #   Type: String
-  PreReqsOnAccounts:
-    Description: Conditionally adds the required policies after prereqs in other accounts are met
-    Type: String
-    Default: 'false'
-    AllowedValues:
-      - 'true'
-      - 'false'
-Conditions:
-  AddPolicies: !Equals [!Ref PreReqsOnAccounts, true]
 
 Resources:
   KMSKey:
@@ -74,9 +65,6 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                - !Sub arn:aws:iam::${ProductionAccount}:root
-                # - !Sub arn:aws:iam::${StageAccount}:root
-                # - !Sub arn:aws:iam::${DevAccount}:root
                 - !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-CodepipelineRole
                 - !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-CodebuildRole
             Action:
@@ -101,7 +89,6 @@ Resources:
         Status: Enabled
 
   S3BucketPolicy:
-    Condition: AddPolicies
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref S3BucketArtifact
@@ -116,12 +103,6 @@ Resources:
               - !Sub arn:aws:s3:::${S3BucketArtifact}/*
             Principal:
               AWS:
-                # - !Sub arn:aws:iam::${StageAccount}:role/CodepipelineRole
-                # - !Sub arn:aws:iam::${StageAccount}:role/CloudformationDeployRole
-                - !Sub arn:aws:iam::${ProductionAccount}:role/CodepipelineRole
-                - !Sub arn:aws:iam::${ProductionAccount}:role/CloudformationDeployRole
-                # - !Sub arn:aws:iam::${DevAccount}:role/CodepipelineRole
-                # - !Sub arn:aws:iam::${DevAccount}:role/CloudformationDeployRole
                 - !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-CodepipelineRole
                 - !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-CodebuildRole
 
@@ -180,7 +161,7 @@ Resources:
             Action:
               - sts:AssumeRole
             Resource:
-              - !Sub arn:aws:iam::${ProductionAccount}:role/CodepipelineRole
+              - !Sub arn:aws:iam::${ProductionAccount}:role/ServerlessDeployRole
       Roles:
         - !Ref IAMRoleBuildProject
 
@@ -236,14 +217,6 @@ Resources:
             Resource:
               - !Sub arn:aws:s3:::${S3BucketArtifact}/*
               - !Sub arn:aws:s3:::${S3BucketArtifact}
-          - Sid: iam
-            Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Resource:
-              - !Sub arn:aws:iam::${ProductionAccount}:role/CloudformationDeployRole
-              # - !Sub arn:aws:iam::${StageAccount}:role/CodepipelineRole
-              # - !Sub arn:aws:iam::${DevAccount}:role/CodepipelineRole
           - Sid: codestarconnection
             Effect: Allow
             Action:

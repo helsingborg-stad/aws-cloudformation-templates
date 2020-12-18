@@ -195,6 +195,7 @@ Resources:
               - codebuild:BatchGetBuilds
             Resource:
               - !GetAtt CodeBuildProject.Arn
+              - !GetAtt CodeBuildProjectTest.Arn
           - Sid: general
             Effect: Allow
             Action:
@@ -327,11 +328,11 @@ Resources:
               InputArtifacts: 
                 - 
                   Name: SourceOutput
-              RunOrder: 1
+              RunOrder: 2
         - Name: Production
           Actions:
             -
-              Name: DeployStage
+              Name: DeployProd
               ActionTypeId:
                 Category: Build
                 Owner: AWS

@@ -239,13 +239,26 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
-        EnvironmentVariables:
-          - Name: BUILD_OUTPUT_BUCKET
-            Value: !Ref S3BucketArtifact
       Source:
         Type: CODEPIPELINE
         BuildSpec: aws-pipeline-resources/cloudformation/buildspec.yml
 
+  CodeBuildProjectTest:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-CodeBuildProjectTest
+      Description: !Sub ${AWS::StackName}-CodeBuildProjectTest
+      EncryptionKey: !GetAtt KMSKey.Arn
+      ServiceRole: !GetAtt IAMRoleBuildProject.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: aws-pipeline-resources/cloudformation/buildspec-test.yml
 
   CodeStarConnectionsConnection:
     Type: 'AWS::CodeStarConnections::Connection'
@@ -280,7 +293,7 @@ Resources:
               OutputArtifacts:
                 - Name: SourceOutput
               RunOrder: 1
-        - Name: DeployStage
+        - Name: Stage
           Actions:
             -
               Name: DeployStage
@@ -294,14 +307,46 @@ Resources:
                 EnvironmentVariables: !Sub |
                   [
                     {
-                      "name": "ACCOUNT",
+                      "name": "AWS_ACCOUNT_NBR",
                       "value": "${ProductionAccount}"
                     }
                   ]
               InputArtifacts: 
                 - 
                   Name: SourceOutput
-              OutputArtifacts:
+              RunOrder: 1
+            -
+              Name: TestStage
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Sub ${AWS::StackName}-CodeBuildProjectTest
+              InputArtifacts: 
                 - 
-                  Name: BuildPHPOutput
+                  Name: SourceOutput
+              RunOrder: 1
+        - Name: Production
+          Actions:
+            -
+              Name: DeployStage
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Sub ${AWS::StackName}-CodeBuildProject
+                EnvironmentVariables: !Sub |
+                  [
+                    {
+                      "name": "AWS_ACCOUNT_NBR",
+                      "value": "${ProductionAccount}"
+                    }
+                  ]
+              InputArtifacts: 
+                - 
+                  Name: SourceOutput
               RunOrder: 1

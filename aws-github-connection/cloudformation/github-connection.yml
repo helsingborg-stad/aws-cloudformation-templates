@@ -1,0 +1,16 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Github connector template.
+
+Resources:
+  CodeStarConnectionsConnection:
+    Type: AWS::CodeStarConnections::Connection
+    Properties:
+      ConnectionName: github-connection
+      ProviderType: GitHub
+
+Outputs:
+  CodeStarConnection:
+    Value: !Ref CodeStarConnectionsConnection
+    Export:
+      Name: !Sub "${AWS::StackName}-CodeStarConnection"
